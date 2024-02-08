@@ -13,13 +13,25 @@ class BacktestStrategy:
         top_5_returns = []
         even_returns = []
 
-        for date, row in self.factors.iterrows():
+        # for date, row in self.factors.iterrows():
+        #     sorted_tickers = row.sort_values(ascending=False)
+        #     top_5_tickers = sorted_tickers.nlargest(5).index
+
+        #     # Calculate returns for top 5 and even positions
+        #     top_5_returns.append(self._calculate_daily_return(top_5_tickers, date))
+        #     even_returns.append(self._calculate_daily_return(self.factors.columns, date))
+
+        for date in self.factors.index[1:]: 
+            prev_date = self.factors.index[self.factors.index.get_loc(date) - 1]  
+            row = self.factors.loc[prev_date] 
+
             sorted_tickers = row.sort_values(ascending=False)
             top_5_tickers = sorted_tickers.nlargest(5).index
 
             # Calculate returns for top 5 and even positions
             top_5_returns.append(self._calculate_daily_return(top_5_tickers, date))
             even_returns.append(self._calculate_daily_return(self.factors.columns, date))
+
 
         return top_5_returns, even_returns
 
@@ -37,7 +49,7 @@ class BacktestStrategy:
 
     @staticmethod
     def plot_cumulative_returns(returns, label):
-        cumulative_returns = np.cumprod([1 + r for r in returns])
+        cumulative_returns = np.cumprod([1+r for r in returns])
         plt.plot(cumulative_returns, label=label)
 
 def main(factor_file, data_folder):
